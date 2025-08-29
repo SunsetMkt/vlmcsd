@@ -654,6 +654,51 @@ endif
 clean:
 	rm -f $(REAL_PROGRAM_NAME) $(REAL_MULTI_NAME) $(REAL_DLL_NAME) $(REAL_CLIENT_NAME)  $(OBJ_NAME) $(REAL_A_NAME) ../bin/* ../build/* *.d
 
+# Unit test targets
+TEST_RUNNER_NAME ?= ../bin/test_runner
+TEST_FRAMEWORK_OBJS = test_framework.o
+TEST_COMMON_OBJS = $(TEST_FRAMEWORK_OBJS) endian.o helpers.o crypto.o output.o shared_globals.o crypto_internal.o kmsdata.o kms.o
+
+.PHONY: test_runner
+
+test_runner: $(TEST_RUNNER_NAME)
+
+$(TEST_RUNNER_NAME): test_runner.o test_endian.o test_helpers.o test_crypto.o $(TEST_COMMON_OBJS)
+  ifneq ($(VERBOSE),1)
+	+@echo "$(COMPILER)\tLD\t$(notdir $@) <- $^"
+  endif
+	+@$(CC) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) $(SERVERLDFLAGS) -o $@ test_runner.o test_endian.o test_helpers.o test_crypto.o $(TEST_COMMON_OBJS)
+
+test_runner.o: test_runner.c test_framework.h
+  ifneq ($(VERBOSE),1)
+	+@echo "$(COMPILER)\tCC\t$(notdir $@) <- $<"
+  endif
+	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) $(SERVERLDFLAGS) -o $@ -c $<
+
+test_endian.o: test_endian.c test_framework.h endian.h
+  ifneq ($(VERBOSE),1)
+	+@echo "$(COMPILER)\tCC\t$(notdir $@) <- $<"
+  endif
+	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) $(SERVERLDFLAGS) -o $@ -c $<
+
+test_helpers.o: test_helpers.c test_framework.h helpers.h
+  ifneq ($(VERBOSE),1)
+	+@echo "$(COMPILER)\tCC\t$(notdir $@) <- $<"
+  endif
+	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) $(SERVERLDFLAGS) -o $@ -c $<
+
+test_crypto.o: test_crypto.c test_framework.h crypto.h
+  ifneq ($(VERBOSE),1)
+	+@echo "$(COMPILER)\tCC\t$(notdir $@) <- $<"
+  endif
+	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) $(SERVERLDFLAGS) -o $@ -c $<
+
+test_framework.o: test_framework.c test_framework.h
+  ifneq ($(VERBOSE),1)
+	+@echo "$(COMPILER)\tCC\t$(notdir $@) <- $<"
+  endif
+	+@$(CC) -x$(COMPILER_LANGUAGE) $(PLATFORMFLAGS) $(BASECFLAGS) $(CFLAGS) $(PLATFORMFLAGS) $(SERVERLDFLAGS) -o $@ -c $<
+
 dnsclean:
 	rm -f ../build/dns_srv.o
 

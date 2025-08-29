@@ -112,6 +112,16 @@ all:
 
 clean:
 	+@$(MAKE) -j$(MAX_THREADS) -C src $@ FROM_PARENT=1 PROGRAM_NAME=$(PROGRAM_NAME) CLIENT_NAME=$(CLIENT_NAME) MULTI_NAME=$(MULTI_NAME) DLL_NAME=$(DLL_NAME) A_NAME=$(A_NAME)
+	+@rm -rf bin/test_* bin/test_runner
+
+test: all
+	+@echo "Building unit tests..."
+	+@(test -d bin || mkdir bin)
+	+@$(MAKE) -j$(MAX_THREADS) -C src test_runner FROM_PARENT=1 PROGRAM_NAME=$(PROGRAM_NAME) CLIENT_NAME=$(CLIENT_NAME) MULTI_NAME=$(MULTI_NAME) DLL_NAME=$(DLL_NAME) A_NAME=$(A_NAME)
+	+@echo "Running unit tests..."
+	+@./bin/test_runner
+
+check: test
 
 alldocs:
 	+@$(MAKE) -j$(MAX_THREADS) -C man $@
@@ -135,6 +145,8 @@ help:
 	@echo "    ${MAKE}               - to build $(BASE_PROGRAM_NAME) and $(BASE_CLIENT_NAME)"
 	@echo "    ${MAKE} all           - to build $(BASE_PROGRAM_NAME), $(BASE_CLIENT_NAME) and $(A_NAME)"
 	@echo "    ${MAKE} clean         - to remove all targets and temporary files"
+	@echo "    ${MAKE} test          - to build and run unit tests"
+	@echo "    ${MAKE} check         - same as '${MAKE} test'"
 	@echo "    ${MAKE} pdfdocs       - Create PDF versions of the documentation (Requires groff with PDF support)."
 	@echo "    ${MAKE} htmldocs      - Create HTML versions of the documentation."
 	@echo "    ${MAKE} unixdocs      - Create Unix TXT versions of the documentation."
