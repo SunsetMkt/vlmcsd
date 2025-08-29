@@ -15,6 +15,7 @@ VisualStudio
 lib
 .vscode
 *.d
+*.o
 
 # Test case environment
 .test/.env
